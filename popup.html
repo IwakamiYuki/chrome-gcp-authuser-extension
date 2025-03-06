@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GCP Authuser Adjuster</title>
+  <meta charset="UTF-8">
+  <style>
+    .button {
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    .edit-button {
+      color: blue;
+    }
+    .delete-button {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h2>GCP Authuser Adjuster</h2>
+  <h3>Project Mappings</h3>
+  <label for="projectId">Project ID:</label>
+  <input type="text" id="projectId">
+  <label for="projectAuthuser">Authuser:</label>
+  <input type="number" id="projectAuthuser" min="0">
+  <button id="addMapping">Add/Update Mapping</button>
+
+  <ul id="mappingsList"></ul>
+
+  <script src="popup.js"></script>
+</body>
+</html>
+
+

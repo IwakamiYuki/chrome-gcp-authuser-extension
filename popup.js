@@ -8,10 +8,10 @@ document.addEventListener('DOMContentLoaded', function() {
       const projectId = projectIdField.value.trim();
       const projectAuthuser = projectAuthuserField.value.trim();
       if (projectId && projectAuthuser) {
-        chrome.storage.sync.get(['projectMappings'], function(result) {
+        chrome.storage.local.get(['projectMappings'], function(result) {
           let projectMappings = result.projectMappings || {};
           projectMappings[projectId] = projectAuthuser;
-          chrome.storage.sync.set({ projectMappings: projectMappings }, function() {
+          chrome.storage.local.set({ projectMappings: projectMappings }, function() {
             console.log('Project mapping saved:', projectId, projectAuthuser);
             renderMappings();
           });
@@ -29,11 +29,11 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       if (target.classList.contains('delete-button')) {
         const projectId = target.dataset.projectId;
-        chrome.storage.sync.get(['projectMappings'], function(result) {
+        chrome.storage.local.get(['projectMappings'], function(result) {
           let projectMappings = result.projectMappings || {};
           if (projectMappings[projectId]) {
             delete projectMappings[projectId];
-            chrome.storage.sync.set({ projectMappings: projectMappings }, function() {
+            chrome.storage.local.set({ projectMappings: projectMappings }, function() {
               console.log('Project mapping deleted:', projectId);
               renderMappings();
             });
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function renderMappings() {
-      chrome.storage.sync.get(['projectMappings'], function(result) {
+      chrome.storage.local.get(['projectMappings'], function(result) {
         mappingsList.innerHTML = '';
         const projectMappings = result.projectMappings || {};
         for (const [projectId, authuser] of Object.entries(projectMappings)) {

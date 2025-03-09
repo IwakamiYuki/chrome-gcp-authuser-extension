@@ -1,4 +1,4 @@
-chrome.storage.sync.get(['projectMappings'], function(result) {
+chrome.storage.local.get(['projectMappings'], function(result) {
   let url = new URL(window.location.href);
   let projectId = url.searchParams.get('project');
   let currentAuthuser = url.searchParams.get('authuser');

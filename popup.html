@@ -1,34 +1,321 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
   <title>GCP Authuser Adjuster</title>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    .button {
-      margin-left: 10px;
+    :root {
+      --bg: #f6f8fc;
+      --surface: #ffffff;
+      --border: #e1e5ee;
+      --text: #1f2430;
+      --text-sub: #5f6778;
+      --primary: #1a73e8;
+      --primary-hover: #1765cc;
+      --primary-soft: #e8f0fe;
+      --danger: #d93025;
+      --danger-soft: #fce8e6;
+      --shadow: 0 1px 2px rgba(20, 30, 60, 0.08);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #14171c;
+        --surface: #1d2127;
+        --border: #2e343d;
+        --text: #e8eaed;
+        --text-sub: #9aa0ac;
+        --primary: #8ab4f8;
+        --primary-hover: #aecbfa;
+        --primary-soft: #263247;
+        --danger: #f28b82;
+        --danger-soft: #3b2523;
+        --shadow: none;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 380px;
+      margin: 0;
+      padding: 16px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Noto Sans JP", sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    header img {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .subtitle {
+      margin: 0;
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+
+    .section-title {
+      margin: 18px 2px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-sub);
+      letter-spacing: 0.02em;
+    }
+
+    .count {
+      min-width: 20px;
+      padding: 0 7px;
+      border-radius: 10px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      text-align: center;
+      font-size: 11px;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .hint {
+      margin: 0;
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    .form-error {
+      margin: 0;
+      font-size: 11px;
+      color: var(--danger);
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-sub);
+    }
+
+    input {
+      width: 100%;
+      height: 34px;
+      padding: 0 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg);
+      color: var(--text);
+      font: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    input::placeholder {
+      color: var(--text-sub);
+      opacity: 0.6;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-soft);
+    }
+
+    .submit {
+      grid-column: 1 / -1;
+      height: 34px;
+      border: none;
+      border-radius: 6px;
+      background: var(--primary);
+      color: #fff;
+      font: inherit;
+      font-weight: 600;
       cursor: pointer;
+      transition: background 0.15s;
     }
-    .edit-button {
-      color: blue;
+
+    @media (prefers-color-scheme: dark) {
+      .submit {
+        color: #14171c;
+      }
     }
-    .delete-button {
-      color: red;
+
+    .submit:hover {
+      background: var(--primary-hover);
+    }
+
+    #mappingsList {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+
+    .mapping {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .mapping-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .mapping-id {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+    }
+
+    .mapping-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .badge {
+      flex: 0 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge-sync {
+      flex-shrink: 0;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+    }
+
+    .mapping-actions {
+      flex-shrink: 0;
+      display: flex;
+      gap: 2px;
+    }
+
+    .icon-button {
+      flex-shrink: 0;
+      height: 26px;
+      padding: 0 8px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-sub);
+      font: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .edit-button:hover {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .delete-button:hover {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .empty {
+      padding: 20px 12px;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      text-align: center;
+      color: var(--text-sub);
+      font-size: 12px;
     }
   </style>
 </head>
 <body>
-  <h2>GCP Authuser Adjuster</h2>
-  <h3>Project Mappings</h3>
-  <label for="projectId">Project ID:</label>
-  <input type="text" id="projectId">
-  <label for="projectAuthuser">Authuser:</label>
-  <input type="number" id="projectAuthuser" min="0">
-  <button id="addMapping">Add/Update Mapping</button>
+  <header>
+    <img src="icon48.png" alt="">
+    <div>
+      <h1>GCP Authuser Adjuster</h1>
+      <p class="subtitle">プロジェクトごとに authuser を固定</p>
+    </div>
+  </header>
 
+  <form id="mappingForm" class="card">
+    <div class="field">
+      <label for="projectId">Project ID</label>
+      <input type="text" id="projectId" placeholder="my-project-123" autocomplete="off" required>
+    </div>
+    <div class="field">
+      <label for="projectAuthuser">Authuser</label>
+      <input type="text" id="projectAuthuser" placeholder="0 または you@example.com" autocomplete="off" required>
+    </div>
+    <p class="hint">メールアドレスは Chrome の同期で他の PC と共有されます。数字は PC ごとの保存です。</p>
+    <p class="form-error" id="formError" hidden></p>
+    <button type="submit" id="addMapping" class="submit">追加 / 更新</button>
+  </form>
+
+  <div class="section-title">
+    <span>登録済みマッピング</span>
+    <span class="count" id="mappingCount">0</span>
+  </div>
   <ul id="mappingsList"></ul>
 
+  <script src="shared.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>
-
-
